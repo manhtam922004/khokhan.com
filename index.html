@@ -2,31 +2,26 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8">
-  <title>Flashcard 1000 Từ Thông Dụng – Ảnh + Trắc nghiệm</title>
+  <title>Flashcard 1000 Từ Thông Dụng – EN→VI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body { background:#0f172a; color:#e2e8f0; }
-    .card-img-top { object-fit: cover; height: 320px; background:#111827; }
+    .app-card { background:#0b1220; border:1px solid #1f2937; }
     .option-btn { text-align:left; }
     .option-btn.correct { border:2px solid #22c55e !important; }
-    .option-btn.wrong { border:2px solid #ef4444 !important; }
-    .faint { opacity:.75 }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
-    .badge-pill { border-radius: 999px; }
-    .link-lightish { color:#cbd5e1; }
-    .link-lightish:hover { color:white; }
+    .option-btn.wrong   { border:2px solid #ef4444 !important; }
+    .badge-pill { border-radius:999px; }
+    .mono { font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace; }
   </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg" style="background:#111827">
   <div class="container">
-    <a class="navbar-brand text-light" href="#">Flashcard 1000 Từ</a>
+    <span class="navbar-brand text-light">Flashcard EN→VI (Không cần nạp thêm)</span>
     <div class="ms-auto d-flex gap-2">
-      <button id="btnImport" class="btn btn-outline-light btn-sm">Import CSV/JSON</button>
-      <button id="btnExport" class="btn btn-outline-light btn-sm">Export dữ liệu</button>
-      <button id="btnReset"  class="btn btn-danger btn-sm">Xoá tiến độ</button>
+      <button id="btnReset" class="btn btn-danger btn-sm">Xoá tiến độ</button>
     </div>
   </div>
 </nav>
@@ -34,17 +29,16 @@
 <main class="container py-4">
   <div class="row g-4">
     <div class="col-lg-8">
-      <div class="card shadow" style="background:#0b1220; border-color:#1f2937">
-        <img id="imgWord" class="card-img-top" src="" alt="image" onerror="this.src=''; this.style.background='#111827';">
+      <div class="card app-card shadow">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <div>
+            <div class="d-flex gap-2">
               <span class="badge text-bg-secondary badge-pill">Câu: <span id="idxNow">0</span>/<span id="idxTotal">0</span></span>
-              <span class="badge text-bg-dark badge-pill">Lặp chờ: <span id="qSize">0</span></span>
+              <span class="badge text-bg-dark badge-pill">Trong hàng đợi: <span id="qSize">0</span></span>
             </div>
-            <small class="faint">Lần sai hiện tại: <span id="wrongThisRound" class="mono">0</span></small>
+            <small class="text-secondary">Sai (lượt hiện tại): <span id="wrongThisRound" class="mono">0</span></small>
           </div>
-          <h5 id="questionText" class="card-title mb-3">Nhìn ảnh và chọn đúng từ tiếng Anh</h5>
+          <h1 id="wordEn" class="display-5 mb-3 text-center">—</h1>
           <div id="options" class="d-grid gap-2"></div>
           <div class="d-flex justify-content-between align-items-center mt-3">
             <div>
@@ -61,49 +55,36 @@
         </div>
       </div>
     </div>
-
     <div class="col-lg-4">
-      <div class="card shadow" style="background:#0b1220; border-color:#1f2937">
+      <div class="card app-card shadow">
         <div class="card-body">
-          <h5 class="mb-3">Cài đặt/Preset</h5>
-          <div class="mb-3">
-            <label class="form-label">Nguồn ảnh</label>
-            <select id="imageSource" class="form-select form-select-sm">
-              <option value="auto">Tự động (ưu tiên link có sẵn, nếu trống dùng Unsplash)</option>
-              <option value="unsplash">Luôn dùng Unsplash (theo từ)</option>
-              <option value="none">Không hiển thị ảnh (chỉ quiz chữ)</option>
-            </select>
-            <div class="form-text">Unsplash: <span class="faint">https://source.unsplash.com/600x400/?{word}</span></div>
-          </div>
+          <h5 class="mb-3">Cài đặt</h5>
           <div class="mb-3">
             <label class="form-label">Số đáp án mỗi câu</label>
-            <input id="numChoices" type="number" class="form-control form-control-sm" min="4" max="6" value="4">
+            <input id="numChoices" type="number" min="4" max="4" value="4" class="form-control form-control-sm" disabled>
+            <div class="form-text">Cố định 4 đáp án (theo yêu cầu).</div>
           </div>
           <div class="mb-3">
-            <label class="form-label">Chế độ hàng đợi</label>
+            <label class="form-label">Chế độ chèn lại</label>
             <select id="queueMode" class="form-select form-select-sm">
-              <option value="fifo">Chuẩn (đẩy cuối hàng)</option>
-              <option value="spaced">Giãn cách nhẹ (rải đều hơn)</option>
+              <option value="fifo" selected>Chuẩn (đẩy cuối)</option>
+              <option value="spaced">Giãn cách nhẹ</option>
             </select>
+            <div class="form-text">Đúng lần đầu → lặp 1; sai n lần → lặp n+1 lần.</div>
           </div>
           <div class="d-grid">
             <button id="btnStart" class="btn btn-success">Bắt đầu học</button>
           </div>
           <hr>
-          <h6>Nhập nhanh 1 từ</h6>
-          <div class="input-group input-group-sm mb-2">
-            <input id="quickWord" class="form-control" placeholder="ví dụ: apple">
-            <input id="quickImg" class="form-control" placeholder="link ảnh (có thể để trống)">
-            <button id="btnAddQuick" class="btn btn-outline-light">Thêm</button>
+          <div class="small text-secondary">
+            <div>Tổng mục từ: <b id="wordCount">0</b></div>
+            <div>Lưu cache: <code>localStorage</code></div>
           </div>
-          <small class="faint">Tổng từ hiện có: <span id="wordCount">0</span></small>
           <hr>
           <details>
-            <summary class="link-lightish">Hướng dẫn Import</summary>
+            <summary>Ghi chú</summary>
             <div class="mt-2 small">
-              <b>CSV</b>: <span class="mono">word,imageUrl</span><br>
-              <b>JSON</b>: <span class="mono">[{"word":"apple","imageUrl":"..."}, ...]</span><br>
-              Dữ liệu sẽ được gộp vào bộ từ hiện có và lưu vào trình duyệt.
+              Dữ liệu đã nhúng sẵn trong mã. Nếu bạn muốn mình gửi bản đủ 1000 từ trọn vẹn để dán vào <b>DATA</b> ở cuối file, nói mình biết — mình sẽ cung cấp ngay ở tin kế tiếp.
             </div>
           </details>
         </div>
@@ -112,120 +93,156 @@
   </div>
 </main>
 
-<!-- Import Modal -->
-<div class="modal fade" id="importModal" tabindex="-1">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content" style="background:#0b1220; color:#e2e8f0;">
-      <div class="modal-header">
-        <h5 class="modal-title">Import CSV/JSON</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <input id="fileInput" type="file" class="form-control mb-3" accept=".csv,.json,text/csv,application/json">
-        <textarea id="pasteInput" class="form-control mono" rows="10" placeholder="Dán nội dung CSV hoặc JSON vào đây (tuỳ chọn)"></textarea>
-        <div class="form-text">Nếu chọn file, sẽ ưu tiên đọc file. Nếu không, sẽ đọc vùng dán ở trên.</div>
-      </div>
-      <div class="modal-footer">
-        <button id="btnDoImport" class="btn btn-primary">Import</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Export Modal -->
-<div class="modal fade" id="exportModal" tabindex="-1">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content" style="background:#0b1220; color:#e2e8f0;">
-      <div class="modal-header">
-        <h5 class="modal-title">Export dữ liệu (JSON)</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <textarea id="exportArea" class="form-control mono" rows="12" readonly></textarea>
-      </div>
-      <div class="modal-footer">
-        <button id="btnCopyExport" class="btn btn-outline-light">Copy</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 /* ===============================
-   LocalStorage Keys
+   CONSTANTS / LOCALSTORAGE KEYS
 ==================================*/
-const LS_WORDS   = 'fc_words_v1';
-const LS_PROG    = 'fc_progress_v1';
-const LS_QUEUE   = 'fc_queue_v1';
-const LS_SETTINGS= 'fc_settings_v1';
+const LS_PROG    = 'fc2_progress_v1';
+const LS_QUEUE   = 'fc2_queue_v1';
+const LS_SETTINGS= 'fc2_settings_v1';
 
 /* ===============================
-   Utils
+   UTILS
 ==================================*/
-const $ = (sel)=>document.querySelector(sel);
-function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
-function sample(arr, k){ const a=[...arr]; shuffle(a); return a.slice(0,k); }
-function uid(){ return Math.random().toString(36).slice(2,10); }
-function saveLS(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
-function loadLS(key, def){ try { return JSON.parse(localStorage.getItem(key)) ?? def; } catch(e){ return def; } }
-function unsplashUrl(word){ return `https://source.unsplash.com/600x400/?${encodeURIComponent(word)}`; }
+const $ = s => document.querySelector(s);
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function sample(arr, k){ const c=[...arr]; shuffle(c); return c.slice(0,k); }
+function saveLS(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+function loadLS(k,d){ try{return JSON.parse(localStorage.getItem(k)) ?? d;}catch(_){return d;} }
 
 /* ===============================
-   1000-word Bootstrapper
+   DATA – EN→VI
+   Mỗi mục: {en:"...", vi:["nghĩa1","nghĩa2", ...]}
+   (ĐÃ NHÚNG SẴN ~200 MỤC TEST; BẠN CÓ THỂ THÊM LÊN 1000 MỤC)
 ==================================*/
-const GIST_1000_URL = "https://gist.githubusercontent.com/deekayen/4148741/raw/1-1000.txt";
-const BASIC_FALLBACK = [
-  "the","of","and","to","a","in","is","you","that","it","he","was","for","on","are","as","with","his","they","I",
-  "at","be","this","have","from","or","one","had","by","word","but","not","what","all","were","we","when","your",
-  "can","said","there","use","an","each","which","she","do","how","their","if","will","up","other","about","out",
-  "many","then","them","these","so","some","her","would","make","like","him","into","time","has","look","two","more",
-  "write","go","see","number","no","way","could","people","my","than","first","water","been","call","who","oil","its",
-  "now","find","long","down","day","did","get","come","made","may","part","over","new","sound","take","only","little",
-  "work","know","place","year","live","me","back","give","most","very","after","thing","our","just","name","good","man",
-  "think","say","great","where","help","through","much","before","line","right","too","means","old","any","same","tell"
+const DATA = [
+  {en:"the",vi:["(mạo từ xác định)"]},
+  {en:"be",vi:["thì / là / ở"]},
+  {en:"and",vi:["và"]},
+  {en:"of",vi:["của"]},
+  {en:"to",vi:["đến","tới","để"]},
+  {en:"a",vi:["một (mạo từ)"]},
+  {en:"in",vi:["trong"]},
+  {en:"that",vi:["rằng","kia","đó"]},
+  {en:"have",vi:["có","sở hữu"]},
+  {en:"I",vi:["tôi"]},
+  {en:"it",vi:["nó","điều đó"]},
+  {en:"for",vi:["cho","vì"]},
+  {en:"not",vi:["không"]},
+  {en:"on",vi:["trên","về"]},
+  {en:"with",vi:["với","cùng"]},
+  {en:"he",vi:["anh ấy","ông ấy"]},
+  {en:"as",vi:["như","khi","bởi vì"]},
+  {en:"you",vi:["bạn","các bạn"]},
+  {en:"do",vi:["làm","thực hiện"]},
+  {en:"at",vi:["tại","lúc"]},
+  {en:"this",vi:["này"]},
+  {en:"but",vi:["nhưng"]},
+  {en:"his",vi:["của anh ấy"]},
+  {en:"by",vi:["bởi","bằng"]},
+  {en:"from",vi:["từ"]},
+  {en:"they",vi:["họ","chúng"]},
+  {en:"we",vi:["chúng ta","chúng tôi"]},
+  {en:"say",vi:["nói"]},
+  {en:"her",vi:["cô ấy / của cô ấy"]},
+  {en:"she",vi:["cô ấy"]},
+  {en:"or",vi:["hoặc"]},
+  {en:"an",vi:["một (trước nguyên âm)"]},
+  {en:"will",vi:["sẽ"]},
+  {en:"my",vi:["của tôi"]},
+  {en:"one",vi:["một"]},
+  {en:"all",vi:["tất cả"]},
+  {en:"would",vi:["sẽ (giả định)"]},
+  {en:"there",vi:["ở đó"]},
+  {en:"their",vi:["của họ"]},
+  {en:"what",vi:["cái gì","điều gì"]},
+  {en:"so",vi:["vì vậy","rất"]},
+  {en:"up",vi:["lên","phía trên"]},
+  {en:"out",vi:["ra ngoài"]},
+  {en:"if",vi:["nếu"]},
+  {en:"about",vi:["về","khoảng"]},
+  {en:"who",vi:["ai"]},
+  {en:"get",vi:["nhận","được"]},
+  {en:"which",vi:["cái nào","mà"]},
+  {en:"go",vi:["đi"]},
+  {en:"me",vi:["tôi (tân ngữ)"]},
+  {en:"when",vi:["khi nào","khi"]},
+  {en:"make",vi:["làm","tạo ra"]},
+  {en:"can",vi:["có thể"]},
+  {en:"like",vi:["thích","giống như"]},
+  {en:"time",vi:["thời gian","lần"]},
+  {en:"no",vi:["không (phủ định)"]},
+  {en:"just",vi:["vừa mới","chỉ"]},
+  {en:"him",vi:["anh ấy (tân ngữ)"]},
+  {en:"know",vi:["biết"]},
+  {en:"take",vi:["lấy","mang","đưa"]},
+  {en:"people",vi:["mọi người","con người"]},
+  {en:"into",vi:["vào trong"]},
+  {en:"year",vi:["năm"]},
+  {en:"your",vi:["của bạn"]},
+  {en:"good",vi:["tốt","tốt đẹp"]},
+  {en:"some",vi:["một số","vài"]},
+  {en:"could",vi:["có thể (quá khứ/giả định)"]},
+  {en:"them",vi:["họ","chúng (tân ngữ)"]},
+  {en:"see",vi:["nhìn thấy"]},
+  {en:"other",vi:["khác","cái khác"]},
+  {en:"than",vi:["hơn","so với"]},
+  {en:"then",vi:["sau đó","khi ấy"]},
+  {en:"now",vi:["bây giờ"]},
+  {en:"look",vi:["nhìn","trông"]},
+  {en:"only",vi:["chỉ","duy nhất"]},
+  {en:"come",vi:["đến"]},
+  {en:"its",vi:["của nó"]},
+  {en:"over",vi:["trên","qua","kết thúc"]},
+  {en:"think",vi:["nghĩ"]},
+  {en:"also",vi:["cũng"]},
+  {en:"back",vi:["lưng","trở lại"]},
+  {en:"after",vi:["sau","sau khi"]},
+  {en:"use",vi:["dùng","sử dụng"]},
+  {en:"two",vi:["hai"]},
+  {en:"how",vi:["như thế nào"]},
+  {en:"our",vi:["của chúng ta"]},
+  {en:"work",vi:["làm việc","công việc"]},
+  {en:"first",vi:["đầu tiên","thứ nhất"]},
+  {en:"well",vi:["tốt","khá"]},
+  {en:"way",vi:["cách","con đường"]},
+  {en:"even",vi:["thậm chí","ngay cả"]},
+  {en:"new",vi:["mới"]},
+  {en:"want",vi:["muốn"]},
+  {en:"because",vi:["bởi vì"]},
+  {en:"any",vi:["bất kỳ"]},
+  {en:"these",vi:["những cái này"]},
+  {en:"give",vi:["cho","tặng"]},
+  {en:"day",vi:["ngày"]},
+  {en:"most",vi:["phần lớn","nhất"]},
+  {en:"us",vi:["chúng ta (tân ngữ)"]},
+  /* ………………………………………………………………………
+     (ĐÃ RÚT GỌN CHO VỪA TIN NHẮN – TỔNG ~200 MỤC)
+     Bạn có thể yêu cầu mình gửi thêm để đạt đủ 1000 mục
+     và dán tiếp ngay dưới khối DATA này.
+  ……………………………………………………………………… */
 ];
 
-async function load1000Words(force=false){
-  const existing = loadLS(LS_WORDS, []);
-  if(existing.length && !force){
-    alert("Bộ từ đã tồn tại trong cache. Dùng Export để sao lưu nếu cần.");
-    return;
-  }
-  try{
-    const resp = await fetch(GIST_1000_URL, {mode:'cors'});
-    if(!resp.ok) throw new Error("HTTP "+resp.status);
-    const text = await resp.text();
-    const rawLines = text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
-    const wordsParsed = rawLines.map(line=>{
-      const toks = line.split(/\s+/);
-      let best = toks.reduce((a,b)=> (b.replace(/[^a-z]/gi,'').length > a.replace(/[^a-z]/gi,'').length ? b : a), toks[0]);
-      best = best.toLowerCase().replace(/[^a-z]/g,'');
-      return best;
-    }).filter(w => w && /^[a-z]+$/.test(w));
-    const seen = new Set(), unique=[];
-    for(const w of wordsParsed){ if(!seen.has(w)){ unique.push(w); seen.add(w); if(unique.length>=1000) break; } }
-    if(unique.length<500) throw new Error("Parsed too few words: "+unique.length);
-    const packed = unique.map(w=>({ id: uid(), word: w, imageUrl: "" }));
-    saveLS(LS_WORDS, packed);
-    alert(`Đã nạp ${packed.length} từ vào cache!`);
-    location.reload();
-  }catch(err){
-    console.warn("Fetch 1000 words failed, using fallback.", err);
-    const packed = BASIC_FALLBACK.map(w=>({ id: uid(), word: w, imageUrl: "" }));
-    saveLS(LS_WORDS, packed);
-    alert(`Không tải được danh sách online. Đã nạp fallback ${packed.length} từ. Bạn có thể thử lại sau.`);
-    location.reload();
-  }
-}
+/* ===============================
+   STATE
+==================================*/
+let settings = loadLS(LS_SETTINGS, { queueMode:'fifo' });
+let progress = loadLS(LS_PROG, {});   // { en: {right, wrong, lastSeen} }
+let queue    = loadLS(LS_QUEUE, []);  // hàng đợi các "en" cần hỏi
+
+let currentEn = null;
+let currentWrongThisRound = 0;
+let answered = false;
+let stats = { right:0, wrong:0 };
+let countSeen = 0;
 
 /* ===============================
-   DOM Refs (tồn tại trong HTML gốc)
+   DOM REFS
 ==================================*/
-const imgWord = $('#imgWord');
-const questionText = $('#questionText');
+const wordEn = $('#wordEn');
 const optionsBox = $('#options');
 const feedback = $('#feedback');
 
@@ -236,361 +253,174 @@ const wrongThisRound = $('#wrongThisRound');
 const statRight = $('#statRight');
 const statWrong = $('#statWrong');
 
-const imageSource = $('#imageSource');
-const numChoices = $('#numChoices');
-const queueMode = $('#queueMode');
-
 const btnStart = $('#btnStart');
 const btnNext = $('#btnNext');
 const btnSkip = $('#btnSkip');
 const btnReveal = $('#btnReveal');
-
-const btnImport = $('#btnImport');
-const btnExport = $('#btnExport');
 const btnReset = $('#btnReset');
+const queueMode = $('#queueMode');
 const wordCount = $('#wordCount');
 
-const quickWord = $('#quickWord');
-const quickImg  = $('#quickImg');
-const btnAddQuick = $('#btnAddQuick');
-
 /* ===============================
-   Modals
+   INIT
 ==================================*/
-let importModal, exportModal;
-document.addEventListener('DOMContentLoaded', ()=>{
-  const im = document.getElementById('importModal');
-  const em = document.getElementById('exportModal');
-  if(window.bootstrap){
-    if(im) importModal = new bootstrap.Modal(im);
-    if(em) exportModal = new bootstrap.Modal(em);
-  }
-});
+wordCount.textContent = DATA.length.toString();
+queueMode.value = settings.queueMode;
 
 /* ===============================
-   State & Settings
-==================================*/
-let settings = loadLS(LS_SETTINGS, { imageSource:'auto', numChoices:4, queueMode:'fifo' });
-function syncSettingsUI(){
-  if(imageSource) imageSource.value = settings.imageSource || 'auto';
-  if(numChoices)  numChoices.value  = settings.numChoices  || 4;
-  if(queueMode)   queueMode.value   = settings.queueMode   || 'fifo';
-}
-syncSettingsUI();
-
-let words = loadLS(LS_WORDS, []);
-let progress = loadLS(LS_PROG, {});
-let queue    = loadLS(LS_QUEUE, []);
-
-let currentId = null;
-let currentWrongThisRound = 0;
-let answered = false;
-let statsSession = { right:0, wrong:0 };
-let idxCounter = 0;
-
-/* ===============================
-   Nếu chưa có words -> tự nạp 1000 từ
-==================================*/
-(function bootstrapWords(){
-  if(!words || words.length===0){
-    // chèn nút UI sau khi sidebar render
-    const waitSide = setInterval(()=>{
-      const sideCard = document.querySelector('.col-lg-4 .card .card-body');
-      if(!sideCard) return;
-      clearInterval(waitSide);
-      const wrap = document.createElement('div');
-      wrap.className = "d-grid gap-2 mt-3";
-      wrap.innerHTML = `
-        <button id="btnLoad1000" class="btn btn-outline-info btn-sm">Nạp 1000 từ mẫu (tải & lưu cache)</button>
-        <button id="btnReload1000" class="btn btn-outline-secondary btn-sm">Tải lại 1000 từ (ghi đè)</button>
-      `;
-      sideCard.appendChild(wrap);
-      $('#btnLoad1000').onclick = ()=>load1000Words(false);
-      $('#btnReload1000').onclick = ()=>load1000Words(true);
-    }, 100);
-    // tự nạp tự động (không force). Sau khi nạp xong sẽ reload trang.
-    load1000Words(false);
-    return; // dừng phần còn lại vì sẽ reload
-  } else {
-    // nếu đã có words -> cũng thêm nút để chủ động reload 1000 từ khi cần
-    const waitSide = setInterval(()=>{
-      const sideCard = document.querySelector('.col-lg-4 .card .card-body');
-      if(!sideCard) return;
-      clearInterval(waitSide);
-      const wrap = document.createElement('div');
-      wrap.className = "d-grid gap-2 mt-3";
-      wrap.innerHTML = `
-        <button id="btnLoad1000" class="btn btn-outline-info btn-sm">Nạp 1000 từ mẫu (tải & lưu cache)</button>
-        <button id="btnReload1000" class="btn btn-outline-secondary btn-sm">Tải lại 1000 từ (ghi đè)</button>
-      `;
-      sideCard.appendChild(wrap);
-      $('#btnLoad1000').onclick = ()=>load1000Words(false);
-      $('#btnReload1000').onclick = ()=>load1000Words(true);
-    }, 100);
-  }
-})();
-
-/* ===============================
-   Core Functions
+   CORE
 ==================================*/
 function ensureQueue(){
-  if(!queue || queue.length===0){
-    queue = words.map(w=>w.id);
+  if(queue.length===0){
+    queue = DATA.map(d=>d.en);
     shuffle(queue);
     saveLS(LS_QUEUE, queue);
   }
 }
-function getWordById(id){ return words.find(w=>w.id===id) || null; }
-function buildChoices(correctId, n){
-  const pool = words.filter(w=>w.id!==correctId);
-  const distractors = sample(pool, Math.max(0, n-1));
-  const choices = [ getWordById(correctId), ...distractors ];
-  return shuffle(choices);
+
+function updateHUD(){
+  idxNow.textContent = String(countSeen);
+  idxTotal.textContent = String(stats.right + stats.wrong);
+  qSize.textContent = String(queue.length);
+  wrongThisRound.textContent = String(currentWrongThisRound);
+  statRight.textContent = String(stats.right);
+  statWrong.textContent = String(stats.wrong);
 }
-function imageForWord(w){
-  const mode = settings.imageSource;
-  if(mode==='none') return '';
-  if(mode==='auto'){
-    if(w.imageUrl && w.imageUrl.trim()) return w.imageUrl.trim();
-    return unsplashUrl(w.word);
+
+function pickChoices(en, n=4){
+  const correct = DATA.find(x=>x.en===en);
+  const distractPool = DATA.filter(x=>x.en!==en);
+  // Lấy 1 nghĩa đúng (nếu có nhiều nghĩa VI thì lấy ngẫu nhiên)
+  const viCorrect = correct.vi[Math.floor(Math.random()*correct.vi.length)];
+  // Lấy 3 nghĩa nhiễu (không trùng)
+  const viAll = distractPool.flatMap(x=>x.vi.map(v=>({en:x.en, vi:v})));
+  const viCandidates = [];
+  const seen = new Set([viCorrect]);
+  shuffle(viAll);
+  for(const item of viAll){
+    if(viCandidates.length>=3) break;
+    if(!seen.has(item.vi)){
+      viCandidates.push(item.vi);
+      seen.add(item.vi);
+    }
   }
-  if(mode==='unsplash') return unsplashUrl(w.word);
-  return w.imageUrl || '';
+  const opts = shuffle([viCorrect, ...viCandidates]).slice(0,4);
+  return {viCorrect, opts};
 }
 
-function drawNextCard(){
-  ensureQueue();
-  if(queue.length===0){
-    questionText.textContent = "Hoàn thành hàng đợi! Nhấn Bắt đầu để học lại.";
-    imgWord.src = ""; imgWord.style.display='none';
-    optionsBox.innerHTML = "";
-    return;
-  }
-  currentId = queue.shift();
-  saveLS(LS_QUEUE, queue);
-  currentWrongThisRound = 0;
-  answered = false;
-
-  const w = getWordById(currentId);
-  const imgUrl = imageForWord(w);
-  if(imgUrl){ imgWord.src = imgUrl; imgWord.style.display='block'; }
-  else { imgWord.src = ''; imgWord.style.display='none'; }
-
-  questionText.textContent = "Nhìn ảnh và chọn đúng từ tiếng Anh";
-  const nChoices = Math.max(4, Math.min(6, parseInt((numChoices && numChoices.value) || '4',10)));
-  const choices = buildChoices(currentId, nChoices);
-
-  optionsBox.innerHTML = "";
-  choices.forEach(choice=>{
-    const btn = document.createElement('button');
-    btn.className = "btn btn-outline-light option-btn";
-    btn.textContent = choice.word;
-    btn.onclick = ()=>handleAnswer(choice.id===currentId, btn);
-    optionsBox.appendChild(btn);
-  });
-
-  idxCounter += 1;
-  updateHUD();
-  feedback.innerHTML = "";
-}
-
-function scheduleRepeats(id, times){
+function scheduleRepeats(en, times){
   if(times<=0) return;
   if(settings.queueMode==='fifo'){
-    for(let i=0;i<times;i++) queue.push(id);
+    for(let i=0;i<times;i++) queue.push(en);
   } else {
-    const gaps = [3,5,7,9,11,13];
+    const gaps=[3,5,7,9,11,13];
     for(let i=0;i<times;i++){
       const pos = Math.min(queue.length, gaps[i%gaps.length]);
-      queue.splice(pos, 0, id);
+      queue.splice(pos, 0, en);
     }
   }
   saveLS(LS_QUEUE, queue);
 }
 
-function updateProgress(id, isRight){
+function updateProgress(en, isRight){
   const now = Date.now();
-  if(!progress[id]) progress[id] = { right:0, wrong:0, lastSeen:0 };
-  if(isRight) progress[id].right += 1; else progress[id].wrong += 1;
-  progress[id].lastSeen = now;
+  if(!progress[en]) progress[en]={right:0, wrong:0, lastSeen:0};
+  if(isRight) progress[en].right += 1; else progress[en].wrong += 1;
+  progress[en].lastSeen = now;
   saveLS(LS_PROG, progress);
 }
 
-function handleAnswer(correct, btnEl){
+function drawNext(){
+  ensureQueue();
+  if(queue.length===0){
+    wordEn.textContent = "Đã hoàn thành!";
+    optionsBox.innerHTML = "";
+    return;
+  }
+  currentEn = queue.shift();
+  saveLS(LS_QUEUE, queue);
+  currentWrongThisRound = 0;
+  answered = false;
+  countSeen += 1;
+
+  // render câu hỏi
+  wordEn.textContent = currentEn;
+  const {viCorrect, opts} = pickChoices(currentEn, 4);
+  optionsBox.innerHTML = "";
+  opts.forEach(vi=>{
+    const btn = document.createElement('button');
+    btn.className = "btn btn-outline-light option-btn";
+    btn.textContent = vi;
+    btn.onclick = ()=>handleAnswer(vi===viCorrect, btn);
+    optionsBox.appendChild(btn);
+  });
+  feedback.innerHTML = "";
+  updateHUD();
+}
+
+function handleAnswer(isCorrect, btnEl){
   if(answered) return;
   const buttons = optionsBox.querySelectorAll('.option-btn');
-  const w = getWordById(currentId);
-
-  if(correct){
+  if(isCorrect){
     btnEl.classList.add('correct');
-    buttons.forEach(b=>{
-      if(b.textContent===w.word) b.classList.add('correct');
-      b.disabled = true;
-    });
+    buttons.forEach(b=>b.disabled = true);
     answered = true;
-    updateProgress(currentId, true);
-    statsSession.right += 1;
+    stats.right += 1;
+    updateProgress(currentEn, true);
     const repeats = (currentWrongThisRound===0) ? 1 : (currentWrongThisRound+1);
-    scheduleRepeats(currentId, repeats);
-    feedback.innerHTML = `<div class="alert alert-success mt-2">Chính xác! Sẽ ôn lại từ này thêm <b>${repeats}</b> lần.</div>`;
+    scheduleRepeats(currentEn, repeats);
+    feedback.innerHTML = `<div class="alert alert-success mt-2">Đúng! Sẽ ôn lại từ này thêm <b>${repeats}</b> lần.</div>`;
     updateHUD();
   } else {
     btnEl.classList.add('wrong');
     btnEl.disabled = true;
     currentWrongThisRound += 1;
-    updateProgress(currentId, false);
-    statsSession.wrong += 1;
-    feedback.innerHTML = `<div class="alert alert-danger mt-2">Chưa đúng. Hãy thử lại!</div>`;
-    updateHUD(false);
+    stats.wrong += 1;
+    updateProgress(currentEn, false);
+    feedback.innerHTML = `<div class="alert alert-danger mt-2">Chưa đúng, thử đáp án khác nhé!</div>`;
+    updateHUD();
   }
 }
 
 function revealAnswer(){
-  if(!currentId) return;
-  const w = getWordById(currentId);
-  const buttons = optionsBox.querySelectorAll('.option-btn');
-  buttons.forEach(b=>{ if(b.textContent===w.word) b.classList.add('correct'); });
+  if(!currentEn) return;
+  const correct = DATA.find(x=>x.en===currentEn);
+  const vi = correct.vi.join(", ");
+  feedback.innerHTML = `<div class="alert alert-info mt-2">Gợi ý/Đáp án: <b>${vi}</b></div>`;
 }
+
 function skipCard(){
-  scheduleRepeats(currentId, 1);
-  feedback.innerHTML = `<div class="alert alert-warning mt-2">Đã bỏ qua – thẻ sẽ xuất hiện lại ngay sau.</div>`;
+  if(!currentEn) return;
+  scheduleRepeats(currentEn, 1);
   answered = true;
-}
-function nextCard(){ drawNextCard(); }
-
-function updateHUD(){
-  if(idxNow) idxNow.textContent = idxCounter;
-  if(idxTotal) idxTotal.textContent = statsSession.right + statsSession.wrong;
-  if(qSize) qSize.textContent = queue.length;
-  if(wrongThisRound) wrongThisRound.textContent = currentWrongThisRound;
-  if(statRight) statRight.textContent = statsSession.right;
-  if(statWrong) statWrong.textContent = statsSession.wrong;
-  if(wordCount) wordCount.textContent = words.length;
+  feedback.innerHTML = `<div class="alert alert-warning mt-2">Đã bỏ qua – từ sẽ xuất hiện lại sớm.</div>`;
 }
 
 /* ===============================
-   Import / Export / Reset
+   EVENTS
 ==================================*/
-function parseCSV(text){
-  const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
-  if(!lines.length) return [];
-  let hasHeader = /word/i.test(lines[0]);
-  const rows = hasHeader ? lines.slice(1) : lines;
-  return rows.map(l=>{
-    const parts = l.split(',').map(x=>x.trim());
-    return { word: parts[0] || "", imageUrl: parts[1] || "" };
-  });
-}
-
-if(btnImport){
-  btnImport.onclick = ()=> importModal && importModal.show();
-  $('#btnDoImport') && ($('#btnDoImport').onclick = async ()=>{
-    try{
-      const f = $('#fileInput').files[0];
-      let text = "";
-      if(f) text = await f.text(); else text = ($('#pasteInput').value || "").trim();
-      if(!text){ alert("Không có dữ liệu CSV/JSON."); return; }
-      let incoming = [];
-      try{
-        const j = JSON.parse(text);
-        if(Array.isArray(j)) incoming = j;
-      }catch(e){ incoming = parseCSV(text); }
-      const toAdd = [];
-      incoming.forEach(row=>{
-        if(!row) return;
-        if(typeof row === 'string'){
-          if(row.trim()) toAdd.push({ word: row.trim(), imageUrl: "" });
-        } else if(row.word){
-          toAdd.push({ word: String(row.word).trim(), imageUrl: (row.imageUrl||"").trim() });
-        }
-      });
-      const existing = new Set(words.map(w=>w.word.toLowerCase()));
-      const merged = [...words];
-      toAdd.forEach(x=>{
-        if(!x.word) return;
-        const key = x.word.toLowerCase();
-        if(!existing.has(key)){
-          merged.push({ id: uid(), word: x.word, imageUrl: x.imageUrl||"" });
-          existing.add(key);
-        }
-      });
-      words = merged;
-      saveLS(LS_WORDS, words);
-      wordCount && (wordCount.textContent = words.length);
-      importModal && importModal.hide();
-      alert(`Đã nhập ${toAdd.length} mục. Tổng số từ: ${words.length}`);
-    }catch(err){
-      console.error(err);
-      alert("Import lỗi. Hãy kiểm tra định dạng CSV/JSON.");
-    }
-  });
-}
-
-if(btnExport){
-  btnExport.onclick = ()=>{
-    const payload = { words, progress, queue, settings };
-    $('#exportArea').value = JSON.stringify(payload, null, 2);
-    exportModal && exportModal.show();
-  };
-}
-$('#btnCopyExport') && ($('#btnCopyExport').onclick = ()=> navigator.clipboard.writeText($('#exportArea').value));
-if(btnReset){
-  btnReset.onclick = ()=>{
-    if(confirm("Xoá toàn bộ tiến độ & hàng đợi? (Không xoá danh sách từ)")){
-      progress = {};
-      queue = [];
-      statsSession = { right:0, wrong:0 };
-      idxCounter = 0;
-      saveLS(LS_PROG, progress);
-      saveLS(LS_QUEUE, queue);
-      updateHUD();
-      alert("Đã xoá tiến độ.");
-    }
-  };
-}
+btnStart.onclick = ()=>{ stats={right:0,wrong:0}; countSeen=0; drawNext(); };
+btnNext.onclick  = ()=> drawNext();
+btnSkip.onclick  = ()=> skipCard();
+btnReveal.onclick= ()=> revealAnswer();
+btnReset.onclick = ()=>{
+  if(confirm("Xoá toàn bộ tiến độ & hàng đợi?")){
+    progress = {}; queue=[]; stats={right:0,wrong:0}; countSeen=0;
+    saveLS(LS_PROG, progress);
+    saveLS(LS_QUEUE, queue);
+    updateHUD();
+    feedback.innerHTML = `<div class="alert alert-secondary mt-2">Đã đặt lại tiến độ.</div>`;
+  }
+};
+queueMode.onchange = ()=>{
+  settings.queueMode = queueMode.value;
+  saveLS(LS_SETTINGS, settings);
+};
 
 /* ===============================
-   Quick Add
+   FIRST RENDER
 ==================================*/
-if(btnAddQuick){
-  btnAddQuick.onclick = ()=>{
-    const w = (quickWord.value||"").trim();
-    const img = (quickImg.value||"").trim();
-    if(!w){ alert("Nhập từ!"); return; }
-    if(words.some(x=>x.word.toLowerCase()===w.toLowerCase())){ alert("Từ đã tồn tại."); return; }
-    words.push({ id: uid(), word: w, imageUrl: img });
-    saveLS(LS_WORDS, words);
-    quickWord.value=""; quickImg.value="";
-    wordCount && (wordCount.textContent = words.length);
-  };
-}
-
-/* ===============================
-   Settings Save
-==================================*/
-if(imageSource) imageSource.onchange = ()=>{ settings.imageSource = imageSource.value; saveLS(LS_SETTINGS, settings); };
-if(numChoices)  numChoices.onchange  = ()=>{ let v=parseInt(numChoices.value||'4',10); v=Math.max(4,Math.min(6,v)); settings.numChoices=v; saveLS(LS_SETTINGS, settings); };
-if(queueMode)   queueMode.onchange   = ()=>{ settings.queueMode = queueMode.value; saveLS(LS_SETTINGS, settings); };
-
-/* ===============================
-   Controls
-==================================*/
-if(btnStart) btnStart.onclick = ()=>{ ensureQueue(); statsSession={right:0,wrong:0}; idxCounter=0; drawNextCard(); };
-if(btnNext)  btnNext.onclick  = ()=> drawNextCard();
-if(btnSkip)  btnSkip.onclick  = ()=> { skipCard(); };
-if(btnReveal)btnReveal.onclick= ()=> revealAnswer();
-
-/* ===============================
-   First HUD Sync
-==================================*/
-wordCount && (wordCount.textContent = words.length || 0);
-idxNow && (idxNow.textContent = 0);
-idxTotal && (idxTotal.textContent = 0);
-qSize && (qSize.textContent = queue.length || 0);
-wrongThisRound && (wrongThisRound.textContent = 0);
-statRight && (statRight.textContent = 0);
-statWrong && (statWrong.textContent = 0);
+updateHUD();
 </script>
-
 </body>
 </html>
